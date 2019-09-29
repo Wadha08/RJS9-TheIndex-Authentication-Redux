@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { connect } from "react-redux";
 
 // Logo
 import logo from "./assets/theindex.svg";
@@ -21,10 +22,17 @@ class Sidebar extends Component {
           <Link to="/signup" className="btn btn-success m-2 float-left">
             Signup
           </Link>
+          <Link to="/logout" className="btn btn-success m-2 float-left">
+            logout
+          </Link>
         </div>
       </div>
     );
   }
 }
-
-export default Sidebar;
+const mapStateToProps = state => {
+  return {
+    user: state.user
+  };
+};
+export default connect(mapStateToProps)(Sidebar);
