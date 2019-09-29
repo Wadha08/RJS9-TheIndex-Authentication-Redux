@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import * as actionCreators from "./redux/actions";
 import { connect } from "react-redux";
 
@@ -15,12 +15,12 @@ class Signup extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    this.props.signup(this.state);
+    this.props.signup(this.state, this.props.history);
   };
 
   render() {
     const { username, email, password } = this.state;
-    this.props.history.push("/");
+    if (this.props.user) return <Redirect to="/" />;
 
     return (
       <div className="col-6 mx-auto">
@@ -78,9 +78,15 @@ class Signup extends Component {
   }
 }
 const mapDispatchToProps = dispatch => ({
-  signup: userData => dispatch(actionCreators.signup(userData))
+  signup: (userData, history) =>
+    dispatch(actionCreators.signup(userData, history))
 });
+const mapStateToProps = state => {
+  return {
+    user: state.user
+  };
+};
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Signup);

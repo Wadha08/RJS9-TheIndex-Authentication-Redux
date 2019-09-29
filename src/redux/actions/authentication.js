@@ -19,7 +19,7 @@ const setCurrentUser = token => {
     payload: user
   };
 };
-export const login = userData => {
+export const login = (userData, history) => {
   return async dispatch => {
     try {
       const res = await axios.post(
@@ -28,6 +28,7 @@ export const login = userData => {
       );
       const user = res.data;
       dispatch(setCurrentUser(user.token));
+      if (history) history.push("/");
     } catch (error) {
       console.error(error);
       console.error(error.response.data);
@@ -35,7 +36,7 @@ export const login = userData => {
   };
 };
 
-export const signup = userData => {
+export const signup = (userData, history) => {
   return async dispatch => {
     try {
       const res = await axios.post(
@@ -44,10 +45,30 @@ export const signup = userData => {
       );
       const user = res.data;
       dispatch(setCurrentUser(user.token));
+      if (history) history.push("/");
     } catch (error) {
       console.error(error.response.data);
     }
   };
 };
 
-export const logout = () => {};
+export const logout = () => setCurrentUser();
+
+export const checkForExpiredToken = () => {
+  // Check for token expiration
+  const token = localStorage.getItem("token");
+  let user = null;
+  if (token) {
+    const currentTimeInSeconds = Date.now() / 1000;
+
+    // Decode token and get user info
+    user = jwt_decode(token);
+
+    // Check token expiration
+    if (user.exp >= currentTimeInSeconds) {
+      // Set user
+      return setCurrentUser(token);
+    }
+  }
+  return logout();
+};
